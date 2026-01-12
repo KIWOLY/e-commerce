@@ -7,7 +7,7 @@ This repository demonstrates how to deploy a **Django application** from local d
 - Docker & Docker Compose  
 - PostgreSQL  
 - GitHub Actions (CI/CD)  
-- Linode VPS  
+- Oracle cloud server   
 - Nginx
 - Gunicorn
 - Custom Domain
