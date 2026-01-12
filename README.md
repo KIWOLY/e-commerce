@@ -1,5 +1,5 @@
 
-# 🚀 Django Production Deployment (Step-by-Step)
+#  Django Production Deployment (Step-by-Step)
 ### Docker + PostgreSQL + GitHub Actions (CI/CD) + Linode + Nginx + Gunicorn + Custom Domain + SSL
 
 This repository demonstrates how to deploy a **Django application** from local development to **production** using:
@@ -18,9 +18,9 @@ You will go step-by-step from:
 
 **Local → Docker → GitHub → Linode → Domain → HTTPS**
 
----
 
-## 🧰 Prerequisites
+
+## Prerequisites
 
 Install the following on your system:
 
@@ -30,31 +30,14 @@ Install the following on your system:
 - Docker Desktop  
 - VS Code (recommended)
 
-## 📦 Step 1 — Clone the Project
+## Step 1 — Clone the Project
 ```sh
-git clone https://github.com/dev-rathankumar/django_clickmart_
-cd django_clickmart_
+git clone git@github.com:KIWOLY/e-commerce.git
+cd e-commerce
+
 ```
 
-## Step 2 - Remove Git history
-```sh
-rm -rf .git
-```
-This wipes your commit history & remote. Now it is just files in your local computer, not a repo.
 
-## Create your own GitHub repository
-Go to GitHub → Click New Repository → Name: django-clickmart
-
-## Re-initialize Git
-```sh
-git init
-git add .
-git commit -m "Initial project setup"
-git branch -M main
-git remote add origin https://github.com/<YOUR-USERNAME>/<REPOSITORY-NAME>.git
-git push -u origin main
-```
-Now you have the full source code in your own repo.
 
 ## Run Django Locally (Without Docker)
 Create virtual environment
@@ -244,7 +227,7 @@ Run this command to Dockerize your project:
 ```sh
 docker compose up --build
 ```
-Your project is now Dockerized ✅
+Your project is now Dockerized 
 
 See the docker container health:
 ```sh
@@ -256,135 +239,121 @@ You can try creating superuser inside Docker container.
 docker compose exec backend python manage.py createsuperuser
 ```
 
-## Create Linode Server & SSH Key
 
-👉 [Create a Linode account](https://rathank.com/linode/)
 
-##### Create SSH Key
-On your local machine:
+## Create Oracle Cloud Compute Instance
+
+1. Go to OCI Console → **Compute** → **Instances** → **Create instance**
+2. Name: `ecommerce-prod` (or your choice)
+3. Image & shape: **Ubuntu 22.04** or **24.04** + **VM.Standard.A1.Flex** (4 OCPU + 24 GB – Always Free)
+4. Networking: Use a **public subnet**
+5. **Add SSH key** (choose one):
+   - Let OCI generate → download private key
+   - Or paste your public key:
+
 ```bash
-ls ~/.ssh
-ssh-keygen -t ed25519 -C "clickmart-linode"
-```
+# On your local machine
+ssh-keygen -t ed25519 -C "ecommerce-oracle" -f ~/.ssh/ecommerce_oracle
+cat ~/.ssh/ecommerce_oracle.pub   # ← copy this content
 
-Copy the public key and add it to Linode UI:
-```ssh
-cat ~/.ssh/linode.pub
-```
+Create instance → wait 2–5 minutes → copy the Public IP
 
-## SSH into Linode (Passwordless)
-```sh
-ssh root@<LINODE_IP>
-```
+2. Connect via SSH
+Bash# Using OCI generated key
+ssh -i ~/Downloads/oci_key opc@<PUBLIC_IP>
 
-Update the server:
-```sh
-apt update && apt upgrade -y
-```
+# Or your own key
+ssh -i ~/.ssh/ecommerce_oracle opc@<PUBLIC_IP>
+Update system first:
+Bashsudo apt update && sudo apt upgrade -y
 
-## Install Required Software
-Install Docker:
-```sh
-curl -fsSL https://get.docker.com | sh
-docker --version
-```
 
-Install Docker Compose:
-```sh
-apt install docker-compose-plugin -y
-```
+3. Install Docker & Docker Compose
+Bash# Install Docker
+curl -fsSL https://get.docker.com | sudo sh
 
-Install Git:
-```sh
-apt install git -y
-git --version
-```
+# Docker Compose plugin
+sudo apt install -y docker-compose-plugin
 
-✅ Docker, Docker Compose, and Git installed successfully.
+# Add user to docker group
+sudo usermod -aG docker $USER
 
-## Clone Project into /opt
-Reconnect to SSH (if disconnected):
-```sh
-cd /opt
-mkdir clickmart
-cd clickmart
-git clone https://github.com/your-repo.git .
-```
-Repo is now cloned inside /opt/clickmart
+# Log out & log back in
+exit
+Reconnect after logout:
+Bashssh -i ~/.ssh/ecommerce_oracle opc@<PUBLIC_IP>
 
-## Update Frontend Environment Variable
-In docker-compose.yml:
-```sh
-VITE_SERVER_BASE_URL="http://<LINODE_IP>:8000/api/v1"
-```
 
-Push changes:
-```sh
-git push origin main
-```
+4. Clone the Project
+Bashcd /opt
+sudo mkdir ecommerce
+sudo chown $USER:$USER ecommerce
+cd ecommerce
+git clone https://github.com/YOUR-USERNAME/YOUR-REPO.git .
 
-## Create Environment Files on Linode
-```sh
-nano backend-drf/.env.production
-nano backend-drf/.env.docker
-```
-Add required environment variables inside it.
 
-## Open Firewall Ports on Linode
-⚠️ If ports are not opened, the app will run but won’t be accessible.
+5. Configure Environment Variables
+Frontend (in docker-compose.yml)
+YAMLservices:
+  frontend:
+    environment:
+      - VITE_SERVER_BASE_URL=http://<PUBLIC_IP>:8000/api/v1
+Backend environment files
+Create/edit these files:
+Bashnano backend/.env.production
+nano backend/.env.docker
+Example content for .env.docker / .env.production:
+textDEBUG=False
+ALLOWED_HOSTS=<PUBLIC_IP>,localhost,127.0.0.1
+SECRET_KEY=your-super-long-random-secret-key-here
+# ... database credentials, stripe keys, etc.
 
-Required Ports (Initial Setup)
-```sh
-SSH: 22
-Django Backend: 8000
-React Frontend: 5173
-```
 
-```sh
-Inbound Rules:
+6. :warning: Firewall Configuration (Very Important!)
+A. OCI Security List (Networking level)
 
-Allow TCP 22
-Allow TCP 8000
-Allow TCP 5173
-```
+Go to your instance → Primary VNIC → click Subnet
+Open Default Security List (or assigned one)
+Add Ingress Rules:
+TCP | Port 22 | 0.0.0.0/0 (usually already exists)
+TCP | Port 8000 | 0.0.0.0/0
+TCP | Port 5173 | 0.0.0.0/0
 
-## Build & Run Docker Containers
-```sh
-docker compose up --build -d
+
+B. Instance Firewall (iptables)
+Bash# Open required ports
+sudo iptables -I INPUT -p tcp --dport 8000 -j ACCEPT
+sudo iptables -I INPUT -p tcp --dport 5173 -j ACCEPT
+
+# Make rules persistent
+sudo apt update
+sudo apt install -y iptables-persistent
+
+# During installation → choose YES to save current IPv4 rules
+# Or later:
+sudo netfilter-persistent save
+Verify:
+Bashsudo iptables -L -v -n
+7. Build & Start Containers
+Bashdocker compose up --build -d
 docker compose ps
-```
+8. Test Your Deployment
 
-Test in browser:
+Backend API → http://<PUBLIC_IP>:8000/
+Frontend → http://<PUBLIC_IP>:5173/
+Django Admin (if enabled) → http://<PUBLIC_IP>:8000/admin/
 
-Backend: http://<LINODE_IP>:8000/
+9. Important Django & CORS Settings
+In your Django settings.py:
+PythonALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
-Frontend: http://<LINODE_IP>:5173/
-
-## Fix Django ALLOWED_HOSTS
-In local settings.py:
-```sh
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://<LINODE_IP>:5173'
+    "http://localhost:5173",
+    f"http://{os.getenv('PUBLIC_IP', '<your-ip-here>')}:5173",
+    # "https://yourdomain.com" ← add later
 ]
-```
 
-In local .env.docker:
-```sh
-ALLOWED_HOSTS=<LINODE_IP>,localhost,127.0.0.1
-```
-
-In linode .env.docker:
-```sh
-ALLOWED_HOSTS=<LINODE_IP>,localhost,127.0.0.1
-```
-
-In docker-compose.yml:
-```sh
-VITE_SERVER_BASE_URL: "http://<LINODE_IP>/api/v1"
-```
 
 Push to GitHub:
 ```sh
@@ -392,14 +361,15 @@ git add .
 git commit -m "Allowed host & environments added"
 git push origin main
 ```
+
 This will push the changes to GitHub.
 
-### 🎯 Goal - Whenever I push code to GitHub, my Linode server should automatically update.
+###  Goal - Whenever I push code to GitHub, my oracle server should automatically update.
 
 But first...
 
-### Manually pull the code from GitHub to Linode.
-While logged-in to Linode:
+### Manually pull the code from GitHub to oracle server .
+While logged-in to oracle server :
 ```sh
 git pull origin main
 ```
@@ -567,7 +537,7 @@ Replace the Django run command with Gunicorn:
 command: >
   gunicorn clickmart_main.wsgi:application --bind 0.0.0.0:8000 --workers 3
 ```
-- clickmart_main.wsgi:application → Django entry point
+- e-commerce.wsgi:application → Django entry point
 - --bind 0.0.0.0:8000 → Listen on all interfaces
 - --workers 3 → Run 3 Python worker processes
 
@@ -623,7 +593,7 @@ git commit -m "Make nginx config server-managed"
 git push origin main
 ```
 
-#### SSH into Linode server
+#### SSH into oracle server
 - Create `nginx/default.conf` file
 - Add domain to this file:
 ```
@@ -685,7 +655,7 @@ apt install certbot -y
 ```
 certbot certonly \
   --webroot \
-  -w /opt/clickmart/certbot/www \
+  -w /opt/ecomerce/certbot/www \
   -d djangoclickmart.store \
   -d www.djangoclickmart.store
 ```
@@ -733,10 +703,10 @@ server {
 #### Restart Nginx
 docker compose restart nginx
 
-#### Test HTTPS 🎉
+#### Test HTTPS 
 https://example.com
 
-Congratulations 🎉 You did it.
+Congratulations  You did it.
 
 # Fixing Media Files in Production (Docker + Nginx + Django)
 
