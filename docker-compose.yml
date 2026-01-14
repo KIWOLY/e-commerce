@@ -1,0 +1,61 @@
+# Docker Compose file to define and run multi-container Docker applications
+# services: individual containers (db, backend, frontend)
+services:
+  # PostgreSQL database service
+
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - .env.production
+    # Maps a Docker-managed volume to PostgreSQL’s data directory Without this → data lives inside container → deleted if container is removed
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  #
+  backend:
+    #  Build the Docker image from Dockerfile in ./backend-drf directory
+    build: ./backend-drf
+    #  "8000:8000" → maps container port 8000 to host port 8000
+    ports:
+      - "8000:8000"
+      # Loads backend environment variables (DB credentials, secret key, debug mode)
+    env_file:
+      - ./backend-drf/.env.docker
+      # Ensures db container starts first  Note: depends_on doesn’t wait for DB to be ready; it only ensures the container is running
+    depends_on:
+      - db
+      # Mounts static and media directories from host to container
+    volumes:
+      - ./backend-drf/static:/app/static
+      - ./backend-drf/media:/app/media
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  frontend:
+    build:
+      # frontend use  build.context to specify the build directory
+      context: ./frontend
+      # Passes build-time environment variable to React/Vite
+      # Note: backend here is the service name, Docker Compose automatically creates a network DNS alias will work inside the Docker network
+      # If you want to test frontend locally (outside Docker), use "http://127.0.0.1:8000/api/v1"
+      args:
+        # VITE_SERVER_BASE_URL: "http://backend:8000/api/v1"
+        VITE_SERVER_BASE_URL: "http://130.61.117.245:8000/api/v1"
+
+    # "5173:80" → container port 80 (Nginx) maps to host 5173
+    ports:
+      - "5173:80"
+      # Ensures frontend container starts after backend container starts
+    depends_on:
+      - backend
+  # This creates a named Docker volume to permanently store PostgreSQL data.
+  # Without this:
+  # Database data is stored inside the container
+  # If container is deleted → data is lost
+  # With this:
+  # Data is stored in a Docker-managed volume
+  # Data persists even if container stops or restarts
+volumes:
+  postgres_data:
