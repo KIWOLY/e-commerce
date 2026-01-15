@@ -321,9 +321,8 @@ TCP | Port 5173 | 0.0.0.0/0
 
 
 B. Instance Firewall (iptables)
-Bash# Open required ports
-sudo iptables -I INPUT -p tcp --dport 8000 -j ACCEPT
-sudo iptables -I INPUT -p tcp --dport 5173 -j ACCEPT
+for the oracle server if you use linux image
+make sure you update and open also the linux firewalls   ufw for port 22 80 443
 
 # Make rules persistent
 sudo apt update
