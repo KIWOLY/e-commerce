@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+PythonALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 # Application definition
 
@@ -173,4 +173,5 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
+    "http://130.61.117.245:5173"
 ]
