@@ -176,5 +176,5 @@ cython_debug/
 
 backend-drf/.env.docker
 backend-drf/.env.production
-backend-drf/Dockerfile
+# backend-drf/Dockerfile
 .env.production
