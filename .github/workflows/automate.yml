@@ -18,7 +18,7 @@ jobs:
           key: ${{ secrets.ORACLE_SSH_KEY }}     # private key (GitHub Secret)
           script: |
             # Navigate to project directory
-            cd /e-commerce
+            cd /home/ubuntu/e-commerce
 
             # Pull latest code from Git
             git pull origin master
