@@ -21,15 +21,4 @@ jobs:
             git pull origin master
             docker compose up --build -d
 
-            export DJANGO_SUPERUSER_PASSWORD=${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
-
-            docker compose exec backend python manage.py shell -c "
-            from django.contrib.auth import get_user_model;
-            User = get_user_model();
-            User.objects.filter(username='admin').exists() or
-            User.objects.create_superuser(
-                'admin',
-                'admin@example.com',
-                '${DJANGO_SUPERUSER_PASSWORD}'
-            )
-            "
+          
