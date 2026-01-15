@@ -13,25 +13,23 @@ jobs:
       - name: Deploy via SSH to Oracle VM
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.ORACLE_HOST }}       # Oracle VM public IP
-          username: ${{ secrets.ORACLE_USER }}   # e.g., 'ubuntu' or your user
-          key: ${{ secrets.ORACLE_SSH_KEY }}     # private key (GitHub Secret)
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ubuntu
+          key: ${{ secrets.ORACLE_SSH_KEY }}
           script: |
-            # Navigate to project directory
             cd /home/ubuntu/e-commerce
-
-            # Pull latest code from Git
             git pull origin master
-
-            # Build and start containers
             docker compose up --build -d
 
-            # Run Django migrations
-            docker compose exec backend python manage.py migrate
-
-            # Create superuser (non-interactive)
             export DJANGO_SUPERUSER_PASSWORD=${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
-            docker compose exec backend python manage.py createsuperuser \
-              --noinput \
-              --username admin \
-              --email admin@example.com
+
+            docker compose exec backend python manage.py shell -c "
+            from django.contrib.auth import get_user_model;
+            User = get_user_model();
+            User.objects.filter(username='admin').exists() or
+            User.objects.create_superuser(
+                'admin',
+                'admin@example.com',
+                '${DJANGO_SUPERUSER_PASSWORD}'
+            )
+            "
