@@ -6,7 +6,7 @@ services:
   db:
     image: postgres:16-alpine
     env_file:
-      - .env.production
+      - ./backend-drf/.env.production
     # Maps a Docker-managed volume to PostgreSQL’s data directory Without this → data lives inside container → deleted if container is removed
     volumes:
       - postgres_data:/var/lib/postgresql/data
