@@ -392,12 +392,12 @@ Create a new file:
 .github/workflows/automate.yml
 ```
 ```sh
-name: Auto Deploy to Linode
+name: Auto Deploy to Oracle Cloud Server
 
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
@@ -407,22 +407,34 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.LINODE_HOST }}
-          username: ${{ secrets.LINODE_USER }}
-          key: ${{ secrets.LINODE_SSH_KEY }}
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USER }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
           script: |
-            cd /opt/clickmart
-            git pull origin main
+            cd /e-commerce
+            git pull origin master
             docker compose up --build -d
+
 ```
 
 Add GitHub Secrets:
 GitHub → Your Repository → Settings → Secrets and variables → Actions → New repository secret
 
 ```
-LINODE_HOST → <LINODE_IP>
-LINODE_USER → root
-LINODE_SSH_KEY → Private SSH Key
+Required GitHub Secrets
+
+The following secrets must be configured in the GitHub repository to allow secure deployment:
+
+Secret Name	Description
+ORACLE_HOST	Public IP address of the Oracle Cloud VM
+ORACLE_USER	SSH username (usually ubuntu)
+ORACLE_SSH_KEY	Private SSH key for connecting to the Oracle server
+
+Important Notes
+
+     The SSH key must be the full private key content, not the filename
+
+     Root login is disabled on Oracle Cloud — always use the ubuntu user
 ```
 
 ## Push automation file:
@@ -433,10 +445,24 @@ git push origin main
 ```
 
 Check GitHub Actions tab.
+```sh
+Deployment Process
+
+On every push to the master branch, GitHub Actions will automatically:
+
+Connect to the Oracle Cloud server via SSH
+
+Navigate to the application directory
+
+Pull the latest code from the GitHub repository
+
+Build and restart the Docker containers using Docker Compose
+```
 
 Make a small frontend change and confirm auto-deploy.
 
 ✅ Auto deploy successful.
+
 
 ## Nginx Config
 From local project, create file:
