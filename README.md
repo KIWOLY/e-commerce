@@ -344,7 +344,7 @@ Django Admin (if enabled) → http://<PUBLIC_IP>:8000/admin/
 
 9. Important Django & CORS Settings
 In your Django settings.py:
-PythonALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
 CORS_ALLOWED_ORIGINS = [
