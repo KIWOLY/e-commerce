@@ -418,7 +418,7 @@ jobs:
 ```
 
 Add GitHub Secrets:
-GitHub → Your Repository → Settings → Secrets and variables → Actions → New repository secret
+GitHub → Your Repository → Settings → Secrets and variables → Actions → New repository secret .
 
 ```
 Required GitHub Secrets
