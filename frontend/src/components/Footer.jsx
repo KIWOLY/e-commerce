@@ -8,7 +8,7 @@ export default function Footer() {
           target="_blank"
           className="text-blue-600 hover:underline"
         >
-          Kiwoly  and chrstina
+          Kiwoly 
         </a>
       </p>
 
