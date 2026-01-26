@@ -51,6 +51,9 @@ services:
       # Ensures frontend container starts after backend container starts
     depends_on:
       - backend
+
+    volumes:
+     - frontend_build:/app/dist  
   
 
   nginx :
@@ -59,7 +62,7 @@ services:
      - "80:80"
     volumes:
      - ./nginx:/etc/nginx/conf.d
-     - ./frontend/dist:/usr/share/nginx/html 
+      - frontend_build:/usr/share/nginx/html
     depends_on:
       - frontend
       - backend
@@ -73,3 +76,4 @@ services:
   # Data persists even if container stops or restarts
 volumes:
   postgres_data:
+  frontend_build:
