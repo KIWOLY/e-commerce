@@ -61,7 +61,7 @@ services:
 volumes:
   postgres_data:
 
-nginx :configs:
+nginx :
   image: nginx:alpine
   ports:
     - "80:80"
