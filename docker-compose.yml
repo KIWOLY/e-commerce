@@ -16,8 +16,8 @@ services:
     #  Build the Docker image from Dockerfile in ./backend-drf directory
     build: ./backend-drf
     #  "8000:8000" → maps container port 8000 to host port 8000
-    # ports:
-    #   - "8000:8000"
+    ports:
+      - "8000:8000"
       # Loads backend environment variables (DB credentials, secret key, debug mode)
     env_file:
       - ./backend-drf/.env.docker
@@ -43,17 +43,14 @@ services:
       args:
         # VITE_SERVER_BASE_URL: "http://backend:8000/api/v1"
         # VITE_SERVER_BASE_URL: "http://130.61.117.245:8000/api/v1"
-        VITE_SERVER_BASE_URL: "/api/v1"
+        VITE_SERVER_BASE_URL: "api/v1"
 
     # "5173:80" → container port 80 (Nginx) maps to host 5173
-    # ports:
-    #   - "5173:80"
+    ports:
+      - "5173:80"
       # Ensures frontend container starts after backend container starts
     depends_on:
       - backend
-
-    volumes:
-     - frontend_build:/app/dist  
   
 
   nginx :
@@ -61,8 +58,7 @@ services:
     ports:
      - "80:80"
     volumes:
-     - ./nginx:/etc/nginx/conf.d
-      - frontend_build:/usr/share/nginx/html
+     - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - frontend
       - backend
@@ -75,5 +71,4 @@ services:
   # Data is stored in a Docker-managed volume
   # Data persists even if container stops or restarts
 volumes:
-  postgres_data:
-  frontend_build:
+   postgres_data:

@@ -34,16 +34,18 @@ RUN npm run build
 # # Starts with tiny Nginx image (alpine = lightweight Linux)
 # # get image of nginx alpine from docker hub
 # # Nginx will serve your static React files
-# FROM nginx:alpine
+FROM nginx:alpine
 
 # # Copy build output to Nginx html directory
 # # This line copies the built React app from the previous build stage into the Nginx web server's default directory for serving static files.
-# COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
+
+
 
 # # Expose port 80
-# EXPOSE 80
+EXPOSE 80
 
 # # Start Nginx server
 # # Starts Nginx in the foreground (required in Docker)
 # # daemon off; → ensures Nginx does not run as a background process, otherwise the container exits immediately
-# CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;"]
