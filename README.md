@@ -606,14 +606,41 @@ COLLECT THE STATIC FILE
 
 Purchase a domain from any provider (GoDaddy, Namecheap, etc.).
 
-Connect Domain to Linode (DNS)
+Connect Domain to oracle server(DNS)
 Add the following A records in your domain DNS:
 | Type | Host | Value              |
 | ---- | ---- | ------------------ |
-| A    | @    | `<YOUR_LINODE_IP>` |
-| A    | www  | `<YOUR_LINODE_IP>` |
+| A    | @    | `<YOUR_ORACLE_SERVER_IP>` |
+| A    | www  | `<YOUR_ORACLE_SERVER_IP>` |
 
 Wait for DNS propagation (usually a few minutes to a few hours).
+
+```
+Nginx Domain & SSL Notice
+
+Important: After adding your domain name, do NOT modify default.conf locally.
+
+All Nginx configuration changes, including SSL setup, must be done on the server.
+
+Why
+
+When you push code to GitHub and redeploy, local changes to default.conf will be overwritten.
+
+SSL certificates and settings are server-specific. Any local modifications will be lost.
+
+To apply SSL after updates, you must re-run the SSL setup command on the server.
+
+Recommendation
+
+Add your domain and configure SSL directly on the server.
+
+Keep default.conf in GitHub as-is.
+
+Whenever you make server-side changes to SSL or Nginx, do not push those changes to GitHub.
+so add nginx in  the .gitignore
+
+This ensures your SSL stays valid and your domain configuration is not accidentally reset.
+```
 
 ### Nginx Config as Server-Managed File
 Certbot modifies the Nginx config directly on the server,
