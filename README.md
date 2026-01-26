@@ -578,10 +578,11 @@ git push origin main
 ✅ We only changed how Python code is executed in production.
 
 ### Verify Gunicorn Is Running
-SSH into the Linode server:
+SSH into the oracle server:
 ```
 ssh root@<LINODE_IP>
-cd /opt/clickmart
+cd e-commerce
+cd backend-drf
 docker compose logs backend
 ```
 
