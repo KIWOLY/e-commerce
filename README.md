@@ -682,6 +682,49 @@ docker compose restart backend
 ### Test Domain (HTTP only
 http://example.com
 
+```
+Serving Django with Gunicorn and Nginx
+Issue
+
+After switching to Gunicorn to serve Django in production, the app works but static files (CSS, JS, images) are not loading.
+
+Gunicorn only serves dynamic content and does not handle static files.
+
+Solution
+
+Use Nginx as a reverse proxy to handle static files and forward dynamic requests to Gunicorn.
+
+Nginx serves static content directly, improving performance and making the app fully accessible via the browser.
+
+Docker Setup
+nginx:
+  image: nginx:alpine
+  ports:
+    - "80:80"
+  volumes:
+    - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    - ./backend-drf/static
+  depends_on:
+    - frontend
+    - backend
+
+Nginx Config Example (default.conf)
+server {
+    listen 80;
+    server_name 130.61.117.245 www.cognitech.tlms.live;
+
+    location /static/ {
+        alias /static/;   # Serve Django static files
+    }
+
+    location / {
+        proxy_pass http://backend:8000;  # Forward dynamic requests to Gunicorn
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
 ## Install SSL (Let’s Encrypt)
 
 In the server root directory, create folders:
