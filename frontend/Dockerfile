@@ -31,19 +31,19 @@ ENV VITE_SERVER_BASE_URL=$VITE_SERVER_BASE_URL
 # Output goes into /app/dist (or /app/build depending on your Vite/React config)
 RUN npm run build
 
-# Starts with tiny Nginx image (alpine = lightweight Linux)
-# get image of nginx alpine from docker hub
-# Nginx will serve your static React files
-FROM nginx:alpine
+# # Starts with tiny Nginx image (alpine = lightweight Linux)
+# # get image of nginx alpine from docker hub
+# # Nginx will serve your static React files
+# FROM nginx:alpine
 
-# Copy build output to Nginx html directory
-# This line copies the built React app from the previous build stage into the Nginx web server's default directory for serving static files.
-COPY --from=build /app/dist /usr/share/nginx/html
+# # Copy build output to Nginx html directory
+# # This line copies the built React app from the previous build stage into the Nginx web server's default directory for serving static files.
+# COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# # Expose port 80
+# EXPOSE 80
 
-# Start Nginx server
-# Starts Nginx in the foreground (required in Docker)
-# daemon off; → ensures Nginx does not run as a background process, otherwise the container exits immediately
-CMD ["nginx", "-g", "daemon off;"]
+# # Start Nginx server
+# # Starts Nginx in the foreground (required in Docker)
+# # daemon off; → ensures Nginx does not run as a background process, otherwise the container exits immediately
+# CMD ["nginx", "-g", "daemon off;"]
