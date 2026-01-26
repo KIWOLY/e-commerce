@@ -51,15 +51,7 @@ services:
       # Ensures frontend container starts after backend container starts
     depends_on:
       - backend
-  # This creates a named Docker volume to permanently store PostgreSQL data.
-  # Without this:
-  # Database data is stored inside the container
-  # If container is deleted → data is lost
-  # With this:
-  # Data is stored in a Docker-managed volume
-  # Data persists even if container stops or restarts
-  volumes:
-   postgres_data:
+  
 
   nginx :
     image: nginx:alpine
@@ -70,3 +62,13 @@ services:
     depends_on:
       - frontend
       - backend
+
+# This creates a named Docker volume to permanently store PostgreSQL data.
+  # Without this:
+  # Database data is stored inside the container
+  # If container is deleted → data is lost
+  # With this:
+  # Data is stored in a Docker-managed volume
+  # Data persists even if container stops or restarts
+volumes:
+  postgres_data:
