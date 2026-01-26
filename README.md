@@ -703,7 +703,7 @@ nginx:
     - "80:80"
   volumes:
     - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-    - ./backend-drf/static
+    - ../backend-drf/static:/static
   depends_on:
     - frontend
     - backend
