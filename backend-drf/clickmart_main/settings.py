@@ -174,5 +174,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
-    "http://130.61.117.245:5173"
+    "http://130.61.117.245:5173",
+    "http://www.cognitech.tlms.live",
+    "https://www.cognitech.tlms.live"
 ]
