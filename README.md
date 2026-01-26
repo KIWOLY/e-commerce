@@ -584,6 +584,22 @@ ssh root@<LINODE_IP>
 cd e-commerce
 cd backend-drf
 docker compose logs backend
+
+
+output will be  like
+backend-1  | Not Found: /static/admin/css/base.css
+backend-1  | Not Found: /static/admin/css/nav_sidebar.css
+backend-1  | Not Found: /static/admin/css/dark_mode.css
+backend-1  | Not Found: /static/admin/css/responsive.css
+backend-1  | Not Found: /static/admin/js/theme.js
+backend-1  | Not Found: /static/admin/css/dashboard.css
+backend-1  | Not Found: /static/admin/js/nav_sidebar.js
+backend-1  | Not Found: /static/admin/css/responsive.css
+backend-1  | Not Found: /static/admin/css/nav_sidebar.css
+backend-1  | Not Found: /static/admin/css/dashboard.css
+
+POINT TO NOTE Gunicorn DOEST NOT COLLECT STATICS FILE AS runserver  ADD SETTING ON THE Nginx SO AS TO
+COLLECT THE STATIC FILE 
 ```
 
 ## Purchase a Domain
