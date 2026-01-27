@@ -180,3 +180,5 @@ CORS_ALLOWED_ORIGINS = [
     "http://cognitech.tlms.live",
     "https://cognitech.tlms.live"
 ]
+
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS')
