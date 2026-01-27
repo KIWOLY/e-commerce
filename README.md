@@ -778,35 +778,64 @@ Edit `nginx/default.conf` again:
 
 Replace with FINAL CONFIG:
 ```
+# Redirect all HTTP to HTTPS
 server {
     listen 80;
-    server_name djangoclickmart.store www.djangoclickmart.store;
+    server_name cognitech.tlms.live www.cognitech.tlms.live;
     return 301 https://$host$request_uri;
 }
 
+# HTTPS server
 server {
     listen 443 ssl;
-    server_name djangoclickmart.store www.djangoclickmart.store;
+    server_name cognitech.tlms.live www.cognitech.tlms.live;
 
-    ssl_certificate /etc/letsencrypt/live/djangoclickmart.store/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/djangoclickmart.store/privkey.pem;
+    # SSL certificate
+    ssl_certificate /etc/letsencrypt/live/cognitech.tlms.live/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/cognitech.tlms.live/privkey.pem;
 
+    # Frontend
     location / {
         proxy_pass http://frontend:80;
     }
 
+    # API
     location /api/ {
         proxy_pass http://backend:8000;
     }
 
+    # Admin
     location /admin/ {
         proxy_pass http://backend:8000;
     }
 
+    # Static files
     location /static/ {
         alias /static/;
     }
 }
+
+
+```
+
+```
+in case you geting error on the nginx container
+
+make sure your nginx service in the docker compose look like this
+
+nginx:
+   image: nginx:alpine
+   ports:
+     - "80:80"
+   volumes:
+     - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+     - ./backend-drf/static:/static
+     - ./certbot/www:/var/www/certbot
+     - ./certbot/conf:/etc/letsencrypt
+   depends_on:
+     - frontend
+     - backend
+
 
 ```
 
