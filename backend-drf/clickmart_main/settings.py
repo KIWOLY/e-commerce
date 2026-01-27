@@ -176,5 +176,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     "http://130.61.117.245:5173",
     "http://www.cognitech.tlms.live",
-    "https://www.cognitech.tlms.live"
+    "https://www.cognitech.tlms.live",
+    "http://cognitech.tlms.live",
+    "https://cognitech.tlms.live"
 ]
