@@ -930,3 +930,80 @@ git commit -m "Fix media image URL in serializer"
 git push origin main
 ```
 5. Test again.
+
+
+# RECOMMENDATION FOR SOLVING STATIC AND MEDIA 
+```
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR /'static'
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# Tells Django it is running behind an HTTPS proxy 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
+```
+also modifies the ngnix to follow standard of caching 
+
+```
+# Redirect all HTTP → HTTPS
+server {
+    listen 80;
+    server_name cognitech.tlms.live www.cognitech.tlms.live;
+    return 301 https://$host$request_uri;
+}
+
+# HTTPS server
+server {
+    listen 443 ssl http2;
+    server_name cognitech.tlms.live www.cognitech.tlms.live;
+
+    # SSL certificate
+    ssl_certificate /etc/letsencrypt/live/cognitech.tlms.live/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/cognitech.tlms.live/privkey.pem;
+
+    # ---------- Frontend ----------
+    location / {
+        proxy_pass http://frontend:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    # ---------- API ----------
+    location /api/ {
+        proxy_pass http://backend:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    # ---------- Django Admin ----------
+    location /admin/ {
+        proxy_pass http://backend:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    # ---------- Static ----------
+    location /static/ {
+        alias /static/;
+        access_log off;
+        expires 30d;
+        add_header Cache-Control "public";
+    }
+
+    # ---------- Media ----------
+    location /media/ {
+        alias /media/;
+        access_log off;
+        expires 7d;
+        add_header Cache-Control "public";
+    }
+}
+
+
+```
