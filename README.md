@@ -831,7 +831,7 @@ nginx:
      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
      - ./backend-drf/static:/static
      - ./certbot/www:/var/www/certbot
-     - ./certbot/conf:/etc/letsencrypt:ro
+     - /certbot/conf:/etc/letsencrypt:ro                   
    depends_on:
      - frontend
      - backend
