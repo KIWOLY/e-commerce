@@ -765,11 +765,12 @@ apt install certbot -y
 
 ### Get SSL Certificate (WEBROOT METHOD)
 ```
-certbot certonly \
+sudo certbot certonly \
   --webroot \
-  -w /opt/ecomerce/certbot/www \
-  -d djangoclickmart.store \
-  -d www.djangoclickmart.store
+  -w /home/ubuntu/e-commerce/certbot/www \
+  -d cognitech.tlms.live \
+  -d www.cognitech.tlms.live
+
 ```
 
 ### Enable HTTPS in Nginx
