@@ -60,6 +60,7 @@ services:
    volumes:
      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
      - ./backend-drf/static:/static
+     - ./backend-drf/media:/media
      - ./certbot/www:/var/www/certbot
      - /etc/letsencrypt/:/etc/letsencrypt:ro
    depends_on:
