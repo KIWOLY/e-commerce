@@ -6,3 +6,6 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = "__all__"
+
+    def get_image(self, obj):
+        return obj.image.url if obj.image else None
