@@ -16,7 +16,7 @@ This repository demonstrates how to deploy a **Django application**  with **Reac
 
 You will go step-by-step from:
 
-**Local → Docker → GitHub → Linode → Domain → HTTPS**
+**Local → Docker → GitHub → oracle server → Domain → HTTPS**
 
 
 
