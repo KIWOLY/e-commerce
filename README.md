@@ -263,6 +263,7 @@ Bash# Using OCI generated key
 ssh -i ~/Downloads/oci_key opc@<PUBLIC_IP>
 
 # Or your own key
+chmod 400 private key
 ssh -i ~/.ssh/ecommerce_oracle opc@<PUBLIC_IP>
 Update system first:
 Bashsudo apt update && sudo apt upgrade -y
