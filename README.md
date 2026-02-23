@@ -412,7 +412,7 @@ jobs:
           username: ${{ secrets.ORACLE_USER }}
           key: ${{ secrets.ORACLE_SSH_KEY }}
           script: |
-            cd /e-commerce
+            cd e-commerce
             git pull origin master
             docker compose up --build -d
 
