@@ -1008,3 +1008,45 @@ server {
 
 
 ```
+
+one more move 
+solve the  refresh problem in the frontend
+```
+Create file nginx.conf next to your Dockerfile in Frontend file :
+
+add
+
+server {
+    listen 80;
+    server_name localhost;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Optional: better error pages, caching, etc.
+    # error_page 404 /index.html;
+}
+
+
+Then update your Dockerfile:
+
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+ARG VITE_SERVER_BASE_URL
+ENV VITE_SERVER_BASE_URL=$VITE_SERVER_BASE_URL
+RUN npm run build
+
+FROM nginx:alpine
+# Copy custom config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy build output
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
