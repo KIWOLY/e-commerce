@@ -43,7 +43,7 @@ jobs:
       - name: Build & Push Backend
         uses: docker/build-push-action@v6
         with:
-          context: ./backend
+          context: ./backend-drf
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.BACKEND_IMAGE }}:latest
