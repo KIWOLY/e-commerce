@@ -78,3 +78,4 @@ services:
   # Data persists even if container stops or restarts
 volumes:
    postgres_data:
+   
