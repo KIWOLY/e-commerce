@@ -3,7 +3,7 @@ name: CI/CD - Build Multi-Arch, Push & Deploy
 on:
   push:
     branches:
-      - main
+      - master
 
 env:
   BACKEND_IMAGE: kiwoly/e_commerce-backend
