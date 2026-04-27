@@ -43,7 +43,8 @@ services:
       args:
         # VITE_SERVER_BASE_URL: "http://backend:8000/api/v1"
         # VITE_SERVER_BASE_URL: "http://130.61.117.245:8000/api/v1"
-        VITE_SERVER_BASE_URL: "/api/v1"
+        # VITE_SERVER_BASE_URL: "/api/v1"
+        VITE_SERVER_BASE_URL=https://cognitech.tlms.live/api
 
     # "5173:80" → container port 80 (Nginx) maps to host 5173
     # ports:
