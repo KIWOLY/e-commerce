@@ -187,4 +187,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://cognitech.tlms.live"
 ]
 
-CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+CSRF_TRUSTED_ORIGINS = [
+    "https://cognitech.tlms.live",
+    "https://www.cognitech.tlms.live",
+]
