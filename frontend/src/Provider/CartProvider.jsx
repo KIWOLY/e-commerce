@@ -8,7 +8,7 @@ const cartReducer = (state, action) => {
     case "SET_CART":
       return {
         ...state,
-        items: action?.payload?.items,
+        items: Array.isArray(action?.payload?.items) ? action?.payload?.items : [],
         subtotal: action?.payload?.subtotal,
         total: action?.payload?.total,
         itemCount: action?.payload?.itemCount,

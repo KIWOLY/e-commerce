@@ -13,14 +13,14 @@ export const Home = () => {
   const { api } = useAxios();
 
   const fetchCartData = async () => {
-    dispatch({ type: "START_LOADING" });
     if (!accessToken) return;
+    dispatch({ type: "START_LOADING" });
     try {
       const response = await api.get("/cart/");
       dispatch({
         type: "SET_CART",
         payload: {
-          items: response.data.items,
+          items: Array.isArray(response.data.items) ? response.data.items : [],
           subtotal: response.data.subtotal || 0,
           total: parseFloat(response.data.grand_total) || 0,
           itemCount: response?.data?.items?.length || 0,
